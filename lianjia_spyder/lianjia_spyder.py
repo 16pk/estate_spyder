@@ -8,6 +8,7 @@ import logging
 import requests
 import time
 from bs4 import BeautifulSoup
+from datetime import datetime
 import json
 
 logger = logging.getLogger(__name__)
@@ -73,7 +74,7 @@ def get_selling_details(url, sess=None):
         return
     resp.encoding = 'utf-8'
     soup = BeautifulSoup(resp.text, 'lxml')
-    info_dict = {'url': url}
+    info_dict = {'url': url, 'queryTime': datetime.utcnow()}
     info_dict['title'] = str(soup.find(class_='sellDetailHeader').find(class_='main').string)
     overview = soup.find(class_='overview').find(class_='content')
     info_dict['community'] = str(overview.find(class_='communityName').a.string)
@@ -86,6 +87,7 @@ def get_selling_details(url, sess=None):
         info_dict[info_key] = str(x.contents[1])
     return info_dict
 
+# todo: 抓图片，因为成交后就看不到图片了
 
 if __name__ == '__main__':
     xiaoqu_id = [5011000010254, 5011000012609]
