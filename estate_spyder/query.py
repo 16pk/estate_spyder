@@ -6,12 +6,13 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 
+from . import CONFIG
+
 logger = logging.getLogger(__name__)
 
 
 def create_session():
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'}
+    headers = {'User-Agent': CONFIG['request'].get('userAgent')}
     sess = requests.Session()
     sess.headers = headers
     return sess
