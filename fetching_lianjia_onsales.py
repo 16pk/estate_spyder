@@ -21,5 +21,4 @@ if __name__ == '__main__':
     for id, title in xiaoqu_info.items():
         logging.info(f'Fetch {title} information...')
         onsale_infos.append(fetch_onsales_by_xiaoqu(id, sess, 'estate_details'))
-    pd.concat(onsale_infos).to_csv(f"estate_details/lianjia_stats_{datetime.now().strftime('%Y%m%d')}.csv",
-                                   na_rep='null')
+    pd.concat(onsale_infos).to_excel(f"estate_details/lianjia_stats_{datetime.now().strftime('%Y%m%d')}.xlsx")

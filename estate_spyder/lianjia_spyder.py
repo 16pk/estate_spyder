@@ -6,7 +6,6 @@
 """
 import logging
 import time
-from datetime import datetime
 import json
 import os
 import os.path
@@ -16,10 +15,6 @@ from .query import get_soup
 
 logger = logging.getLogger(__name__)
 URL = CONFIG['url']['lianjia']
-KEY_MAPPING = {'房屋户型': 'hu_xing', '所在楼层': 'lou_ceng', '建筑面积': 'size', '户型结构': 'hu_xing_jie_gou', \
-               '套内面积': 'inner_size', '建筑类型': 'jian_zhu_lei_xing', '房屋朝向': 'orientation', \
-               '建筑结构': 'jian_zhu_jie_gou', '装修情况': 'zhuang_xiu', '梯户比例': 'ti_hu_ratio', \
-               '配备电梯': 'has_elevator', '产权年限': 'chan_quan_nian_xian'}
 
 
 def check_next_page(soup):
@@ -50,16 +45,16 @@ def get_onsale_urls_by_xiaoqu(xiaoqu_id, sess):
 
 
 def get_onsale_info(soup):
-    info_dict = {'queryTime': datetime.utcnow()}
-    info_dict['title'] = str(soup.find(class_='sellDetailHeader').find(class_='main').string)
+    info_dict = {}
+    info_dict['标题'] = str(soup.find(class_='sellDetailHeader').find(class_='main').string)
     overview = soup.find(class_='overview').find(class_='content')
-    info_dict['community'] = str(overview.find(class_='communityName').a.string)
-    info_dict['price'] = float(overview.find(class_='total').string)
-    info_dict['unitPrice'] = float(overview.find(class_='unitPriceValue').contents[0])
+    info_dict['小区'] = str(overview.find(class_='communityName').a.string)
+    info_dict['总价'] = float(overview.find(class_='total').string)
+    info_dict['单价'] = float(overview.find(class_='unitPriceValue').contents[0])
     info_dict['lianjia_id'] = str(overview.find(class_='houseRecord').find(class_='info').contents[0])
     base_info = soup.find(class_='introContent').find(class_='content')
     for x in base_info.find_all('li'):
-        info_key = KEY_MAPPING[str(x.span.string)]
+        info_key = str(x.span.string)
         info_dict[info_key] = str(x.contents[1])
     return info_dict
 
@@ -84,7 +79,9 @@ def fetch_onsales_by_xiaoqu(xiaoqu_id, sess, path='estate_details'):
     for url in urls:
         logger.info(f'Surfing {url} ...')
         crt_soup = get_soup(url, sess)
-        estate_infos.append(get_onsale_info(crt_soup))
+        crt_info = get_onsale_info(crt_soup)
+        crt_info['url'] = url
+        estate_infos.append(crt_info)
         target_folder = os.path.join(path, f"lianjia_{estate_infos[-1]['lianjia_id']}")
         if not os.path.exists(target_folder):
             os.mkdir(target_folder)
