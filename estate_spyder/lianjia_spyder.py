@@ -56,6 +56,7 @@ def get_onsale_info(soup):
     for x in base_info.find_all('li'):
         info_key = str(x.span.string)
         info_dict[info_key] = str(x.contents[1])
+    info_dict['建筑面积'] = float(info_dict['建筑面积'][:-2])
     return info_dict
 
 
