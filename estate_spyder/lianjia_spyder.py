@@ -51,6 +51,7 @@ def get_onsale_info(soup):
     info_dict['小区'] = str(overview.find(class_='communityName').a.string)
     info_dict['总价'] = float(overview.find(class_='total').string)
     info_dict['单价'] = float(overview.find(class_='unitPriceValue').contents[0])
+    info_dict['年份'] = overview.find(class_='area').find(class_='subInfo').string.split('年')[0]
     info_dict['lianjia_id'] = str(overview.find(class_='houseRecord').find(class_='info').contents[0])
     base_info = soup.find(class_='introContent').find(class_='content')
     for x in base_info.find_all('li'):
@@ -83,7 +84,7 @@ def fetch_onsales_by_xiaoqu(xiaoqu_id, sess, path='estate_details'):
         crt_info = get_onsale_info(crt_soup)
         crt_info['url'] = url
         estate_infos.append(crt_info)
-        target_folder = os.path.join(path, f"lianjia_{estate_infos[-1]['lianjia_id']}")
+        target_folder = os.path.join(path, 'lianjia', f"lianjia_{estate_infos[-1]['lianjia_id']}")
         if not os.path.exists(target_folder):
             os.mkdir(target_folder)
             fetch_photos(crt_soup, sess, target_folder)
